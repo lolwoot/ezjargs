@@ -31,6 +31,10 @@ public class ArgumentLine {
       return result;
     }
 
+    public boolean isNextParameter() {
+	    return isParameter(args[pt + 1]);
+    }   
+
     public void proceed(int d) {
 	    pt += d;
     }
@@ -40,7 +44,7 @@ public class ArgumentLine {
     }
 
     public boolean hasNext() {
-      return pt < args.length;
+      return pt + 1 < args.length;
     }
 
     private boolean isParameter(String str) {

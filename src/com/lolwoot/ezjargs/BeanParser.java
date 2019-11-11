@@ -23,8 +23,8 @@ public class BeanParser {
       			System.out.printf("Getting processor for %s.\n", field.getName());
 
 			//TODO check multivalue field
-			boolean multiValue = field.getClass().isArray();
-			System.out.println("Multivalue: " + multiValue);
+			boolean multiValue = field.getType().isArray();
+			System.out.printf("Multivalue: %s. Field class: %s.\n", multiValue, field.getType().getName());
 
       			Processor<?> fieldProc = ProcessorsRepository.of(field.getType());
       			ArgumentInfo info = multiValue ? 
