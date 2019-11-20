@@ -3,6 +3,6 @@
 rmdir classes /S /Q
 mkdir classes
 
-javac -d classes -sourcepath src src/com/lolwoot/ezjargs/Main.java
+javac -d classes -sourcepath src src/com/lolwoot/ezjargs/CLIParser.java
 
 pause

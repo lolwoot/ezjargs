@@ -20,7 +20,7 @@ public class Main {
 
     Main main = new Main();
 
-    ArgumentsParser.parse(args, main);
+    CLIParser.parse(args, main);
 
     System.out.printf("Bean members: %s, %s.\n", main.name, main.id);
     //System.out.printf("Parameters: %s.\n", main.parameters.toString());

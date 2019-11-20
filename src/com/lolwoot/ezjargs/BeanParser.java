@@ -6,14 +6,17 @@ import java.util.HashMap;
 
 import com.lolwoot.ezjargs.processors.Processor;
 import com.lolwoot.ezjargs.processors.ProcessorsRepository;
+import com.lolwoot.ezjargs.options.AbstractOption;
+import com.lolwoot.ezjargs.options.MultiOption;
+import com.lolwoot.ezjargs.options.SingleOption;
 
 public class BeanParser {
 
 	private Object bean;
 	
-	private Map<String, ArgumentInfo> arguments = new HashMap<>();
+	private Map<String, AbstractOption> options = new HashMap<>();
 	
-	public BeanParser(Object bean, ArgumentLine line) {
+	public BeanParser(Object bean) {
     
 		this.bean = bean;  
 		Class<?> clazz = bean.getClass();
@@ -22,22 +25,22 @@ public class BeanParser {
 	    	for(Field field : fields) {
       			System.out.printf("Getting processor for %s.\n", field.getName());
 
-			//TODO check multivalue field
+			//check multivalue field
 			boolean multiValue = field.getType().isArray();
 			System.out.printf("Multivalue: %s. Field class: %s.\n", multiValue, field.getType().getName());
 
       			Processor<?> fieldProc = ProcessorsRepository.of(field.getType());
-      			ArgumentInfo info = multiValue ? 
-				new MultiArgumentInfo(bean, field, fieldProc) : 
-				new SingleArgumentInfo(bean, field, fieldProc);
+      			AbstractOption opt = multiValue ? 
+				new MultiOption(bean, field, fieldProc) : 
+				new SingleOption(bean, field, fieldProc);
 
-      			this.arguments.put(field.getName(), info);
+      			this.options.put(field.getName(), opt);
     		}
-
+		System.out.printf("Parsed fileds: %s\n", options);
   	}
 
-  	public ArgumentInfo getArgInfo(String paramName) {
-		if(!arguments.containsKey(paramName)) throw new RuntimeException(String.format("Field for parameter %s not found.", paramName));
-	  	return arguments.get(paramName);
+  	public AbstractOption getOptionByName(String name) {
+		if(!options.containsKey(name)) throw new RuntimeException(String.format("Field for parameter %s not found.", name));
+	  	return options.get(name);
   	}
 }
