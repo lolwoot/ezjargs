@@ -14,6 +14,7 @@ public class SingleInjector extends AbstractInjector {
 		try {
 			this.field.setAccessible(true);
 			this.field.set(bean, value);
+			System.out.println("Injected");
 		} catch(IllegalAccessException e) {
 			//TODO exception handling
 			e.printStackTrace();
