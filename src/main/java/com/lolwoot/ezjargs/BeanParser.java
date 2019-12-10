@@ -21,6 +21,7 @@ public class BeanParser {
 		this.bean = bean;  
 		Class<?> clazz = bean.getClass();
 
+		//geting all fields incl syntetic (this$0 for local class etc)
     		Field[] fields = clazz.getDeclaredFields();
 	    	for(Field field : fields) {
       			System.out.printf("Getting processor for %s.\n", field.getName());
