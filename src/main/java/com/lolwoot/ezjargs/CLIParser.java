@@ -27,10 +27,15 @@ public class CLIParser {
 		}		
 	}
 
-	//TODO binding
+	//TODO test binding
 	public static CLIParser bind(String optionName, String fieldName) {
 		//bindMap.put(fieldName, optionName);
 		mapping.bind(optionName, fieldName);
+		return instance;
+	}
+
+	public static CLIParser bindParameters(String fieldName) {
+		bind(null, fieldName);
 		return instance;
 	}
 

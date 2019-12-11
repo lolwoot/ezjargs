@@ -33,12 +33,6 @@ public class Container {
 }
 ````
 
-There is 2 option `-files` and `-out`. All option values will injected into filds with same name;
-
-We also can use like this:
-
-`$ filemerge -out c:\\result.txt c:\\file1.txt c:\\file2.txt`
-
 Instead of using 2 options, we use one for result file( `-out` ) and `additional` vararg parameters at end of line for all other files.
 
 ````java
@@ -59,6 +53,8 @@ public class Container {
 ````
 
 All `<other parameters>` mapped to array field with name `additional`.
+
+## TODO
 
 ### Processors (TODO)
 You can add custom processor for type you need. For example we want to add processor for `User` class.
@@ -83,3 +79,52 @@ public class UserProcessor extends AbstractProcessor<User> {
 ````
 
 `$ filemerge -out result.txt -user "Alex 2010-10-20" file1.txt file2.txt`
+
+### Manual mapping fields (TODO)
+We can bind our `<options>` to `Field`.
+````java
+import com.lolwoot.ezjargs.CLIParser;
+public class Main {
+    
+    private static class Container {
+        private String stringValue;
+        private Integer intValue;
+    }   
+
+    //given args line: commandname -s test1 -o test2
+    public static void main(String[] args) {
+        Container c1 = new Container();
+        
+        CLIParser
+            .bind("-s", "stringValue")
+            .bind("-o", "intValue")
+            .parse(args, c1);
+    }       
+}
+````
+
+For mapping parameters use `bindParameters(fieldName)` function.
+````java
+import com.lolwoot.ezjargs.CLIParser;
+public class Main {
+
+	private static class Container {
+		private String strVal;
+		private Integer intVal;
+		private String[] params;
+	}
+	
+	//given args line: commandname -s test1 -o 123 str1 str2 str3		
+	public static void main(String[] args) {
+		Container c = new Container();
+		
+		CLIParser
+			.bind("-s", "strVal")
+			.bind("-o", "intVal")
+			.bindParameters("params")
+			.parse(args, c);
+
+	}
+}
+````
+Now strVal = test1, intVal = 123 and params is array of [str1, str2, str3].

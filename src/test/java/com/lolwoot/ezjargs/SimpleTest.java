@@ -4,9 +4,12 @@ import com.lolwoot.ezjargs.CLIParser;
 import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -86,6 +89,63 @@ public class SimpleTest {
 		});
 	}
 	private class OptionClass {
+
+	}
+
+	@Test
+	public void onlyParameters() {
+		final class Container {
+			private String[] parameters;
+		}
+
+		final String[] ARGS = {"string1", "string2", "string3"};
+		Container c = new Container();
+
+		CLIParser
+			.bindParameters("parameters")
+			.parse(ARGS, c);
+
+		assertArrayEquals(ARGS, c.parameters);
+	}
+
+	@Test
+	public void optionsAndParameters() {
+		final class Container {
+			private String stringField;
+			private Integer integerField;
+			private String[] additional;
+		}
+
+		final String[] ARGS = {"-s", "string1", "-o", "123", "param1", "param2"};
+		Container c = new Container();
+
+		CLIParser
+			.bind("-s", "stringField")
+			.bind("-o", "integerField")
+			.bindParameters("additional")
+			.parse(ARGS, c);
+
+		assertEquals("string1", c.stringField);
+		assertEquals(Integer.valueOf(123), c.integerField);
+		assertArrayEquals(new String[]{"param1", "param2"}, c.additional);
+
+	}
+
+	//@Test
+	//TODO delete?
+	public void justTest() {
+		final class Container {
+			private String[] parameters;
+		}
+
+		final String[] ARGS = {"string1", "string2", "string3"};
+		Container c = new Container();
+
+		CLIParser
+			.bindParameters("parameters")
+			.parse(ARGS, c);
+
+		//assertArrayEquals(ARGS, c.parameters);
 
 	}
 }

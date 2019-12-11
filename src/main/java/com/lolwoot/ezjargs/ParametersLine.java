@@ -33,7 +33,7 @@ public class ParametersLine {
 	    	if(!isOption(params[pt])) {
 			//TODO fix?!
 			pt--;
-			return "additional";
+			return null;
 	    	}
 	    
 	    	return params[pt];
