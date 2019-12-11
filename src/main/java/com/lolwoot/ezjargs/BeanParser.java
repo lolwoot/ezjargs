@@ -9,6 +9,8 @@ import com.lolwoot.ezjargs.processors.ProcessorsRepository;
 import com.lolwoot.ezjargs.options.AbstractOption;
 import com.lolwoot.ezjargs.options.MultiOption;
 import com.lolwoot.ezjargs.options.SingleOption;
+import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
+import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
 
 public class BeanParser {
 
@@ -16,32 +18,41 @@ public class BeanParser {
 	
 	private Map<String, AbstractOption> options = new HashMap<>();
 	
-	public BeanParser(Object bean) {
+	public BeanParser(Object bean, Map<String, String> bindMap) {
     
 		this.bean = bean;  
 		Class<?> clazz = bean.getClass();
 
-		//geting all fields incl syntetic (this$0 for local class etc)
-    		Field[] fields = clazz.getDeclaredFields();
-	    	for(Field field : fields) {
-      			System.out.printf("Getting processor for %s.\n", field.getName());
+		for(Map.Entry<String, String> entry : bindMap.entrySet()) {
 
-			//check multivalue field
-			boolean multiValue = field.getType().isArray();
-			System.out.printf("Multivalue: %s. Field class: %s.\n", multiValue, field.getType().getName());
+			Field field = null;
+			try {
+				field = clazz.getDeclaredField(entry.getKey());
+				System.out.printf("Getting processor for %s.\n", entry);
 
-      			Processor<?> fieldProc = ProcessorsRepository.of(field.getType());
-      			AbstractOption opt = multiValue ? 
-				new MultiOption(bean, field, fieldProc) : 
-				new SingleOption(bean, field, fieldProc);
+				//check multivalue field
+				boolean multiValue = field.getType().isArray();
+				System.out.printf("Multivalue: %s. Field class: %s.\n", multiValue, field.getType().getName());
+				Processor<?> fieldProc = ProcessorsRepository.of(field.getType());
+				AbstractOption opt = multiValue ? 
+					new MultiOption(bean, field, entry.getValue(), fieldProc) : 
+					new SingleOption(bean, field, entry.getValue(), fieldProc);
 
-      			this.options.put(field.getName(), opt);
-    		}
+				this.options.put(entry.getValue(), opt);
+			} catch (NoSuchFieldException ex) {
+				//TODO
+				System.out.println(ex.getMessage());
+				ex.printStackTrace();
+			}
+		}
+		
 		System.out.printf("Parsed fileds: %s\n", options);
   	}
 
-  	public AbstractOption getOptionByName(String name) {
-		if(!options.containsKey(name)) throw new RuntimeException(String.format("Field for parameter %s not found.", name));
-	  	return options.get(name);
+  	public AbstractOption getOptionByName(String optName) {
+		if(!options.containsKey(optName)) {
+			throw new OptionNotMappedException(optName);
+		}
+	  	return options.get(optName);
   	}
 }

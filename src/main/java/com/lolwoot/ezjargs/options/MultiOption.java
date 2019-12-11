@@ -12,8 +12,8 @@ import com.lolwoot.ezjargs.injectors.ArrayInjector;
 
 public class MultiOption extends AbstractOption {
 
-	public MultiOption(Object bean, Field field, Processor<?> processor) {
-		super(bean, field, processor);
+	public MultiOption(Object bean, Field field, String name, Processor<?> processor) {
+		super(bean, field, name, processor);
 	}
 
 	//TODO replace ArrayList?

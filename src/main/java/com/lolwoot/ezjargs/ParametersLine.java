@@ -36,8 +36,7 @@ public class ParametersLine {
 			return "additional";
 	    	}
 	    
-	    	String result = params[pt].replaceAll("-", "");
-	    	return result;
+	    	return params[pt];
     	}
 
     	public boolean isNextOption() {

@@ -10,8 +10,8 @@ import com.lolwoot.ezjargs.injectors.SingleInjector;
 
 public class SingleOption extends AbstractOption {
 
-	public SingleOption(Object bean, Field field, Processor<?> processor) {
-		super(bean, field, processor);
+	public SingleOption(Object bean, Field field, String name, Processor<?> processor) {
+		super(bean, field, name, processor);
 	}
 
 	public Object processOpt(ParametersLine line) {

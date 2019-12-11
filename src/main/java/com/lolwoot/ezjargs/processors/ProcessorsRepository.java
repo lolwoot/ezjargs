@@ -1,8 +1,10 @@
 package com.lolwoot.ezjargs.processors;
 
+import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
+
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.function.Supplier;
 import java.io.File;
 
 public class ProcessorsRepository {
@@ -16,13 +18,14 @@ public class ProcessorsRepository {
 		map.put(File.class, new FileProcessor());
 	}
 
+	
 	public static Processor<?> of(Class<?> clazz) {
 		if(clazz.isArray()) {
 			clazz = clazz.getComponentType();
 		}
 
-		if(!map.containsKey(clazz)) throw new RuntimeException(String.format("Missing processor for %s.\n", clazz.getName()));
-
+		if(!map.containsKey(clazz)) throw new ProcessorNotFoundException(clazz);
+		
 		return map.get(clazz);
   	}
 }
