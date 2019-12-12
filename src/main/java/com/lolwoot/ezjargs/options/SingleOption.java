@@ -1,11 +1,11 @@
 package com.lolwoot.ezjargs.options;
 
-import java.lang.reflect.Field;
-
 import com.lolwoot.ezjargs.ParametersLine;
-import com.lolwoot.ezjargs.processors.Processor;
 import com.lolwoot.ezjargs.injectors.AbstractInjector;
 import com.lolwoot.ezjargs.injectors.SingleInjector;
+import com.lolwoot.ezjargs.processors.Processor;
+
+import java.lang.reflect.Field;
 
 
 public class SingleOption extends AbstractOption {

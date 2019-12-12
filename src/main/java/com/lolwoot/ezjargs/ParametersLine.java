@@ -1,58 +1,57 @@
 package com.lolwoot.ezjargs;
 
-import com.lolwoot.ezjargs.processors.Processor;
 import com.lolwoot.ezjargs.options.AbstractOption;
+
+import java.util.Stack;
 
 public class ParametersLine {
 
-	private String[] params;
+    static final String PARAMETERS_NAME = "parameters";
 
-	private int pt;
+    private final Stack<String> line;
 
-	public ParametersLine(String[] args) {
-		this.params = args;
-		this.pt = 0;
-	}
+    public ParametersLine(String[] args) {
+        this.line = new Stack<>();
+        for (int i = args.length -1; i >= 0; --i) {
+            this.line.push(args[i]);
+        }
+    }
 
-	public void processOpt(AbstractOption opt) {
-		
-		System.out.println("Pointer before process: " + pt);
+    public boolean isEmpty() {
+        return line.empty();
+    }
 
-		//TODO test?
-		opt.process(this);
+    public String getToken() {
+        /*
+            2 cases:
+                First:  if getting option name "-s".
+                Second: if getting simple word "value" then it cant be option value
+                        because all optValues processed by Processor class, so it parameter value.
+                        For parameter values return PARAMETERS_NAME constant
 
-		//increase current pt to next Option name
-		this.pt++;
+         */
+        if (!isOptionName(line.peek())) return PARAMETERS_NAME;
 
-		System.out.println("Pointer after process: " + pt);
-	}
+        return line.pop();
+    }
 
-	//return name of current parameter
-    	public String peekOptName() {
-	    	//in case when current point to additional parameter value TODO
-	    	if(!isOption(params[pt])) {
-			//TODO fix?!
-			pt--;
-			return null;
-	    	}
-	    
-	    	return params[pt];
-    	}
+    private boolean isOptionName(String takenElement) {
+        return takenElement.startsWith("-");
+    }
 
-    	public boolean isNextOption() {
-		return isOption(params[pt + 1]);
-    	}   
+    public void processOption(AbstractOption option) {
+        option.process(this);
+    }
 
-    	public String next() {
-	    	return params[++pt];
-    	}
+    public String next() {
+        return line.pop();
+    }
 
-    	public boolean hasNext() {
-	    	return pt + 1 < params.length;
-    	}
+    public boolean hasNext() {
+        return !line.empty();
+    }
 
-    	private boolean isOption(String str) {
-	    	return str.indexOf("-") == 0;
-    	}
- }
-
+    public boolean isNextOption() {
+        return isOptionName(line.peek());
+    }
+}

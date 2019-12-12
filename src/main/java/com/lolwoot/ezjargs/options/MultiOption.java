@@ -1,14 +1,12 @@
 package com.lolwoot.ezjargs.options;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.io.File;
-import java.lang.reflect.Array;
-
 import com.lolwoot.ezjargs.ParametersLine;
-import com.lolwoot.ezjargs.processors.Processor;
 import com.lolwoot.ezjargs.injectors.AbstractInjector;
 import com.lolwoot.ezjargs.injectors.ArrayInjector;
+import com.lolwoot.ezjargs.processors.Processor;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class MultiOption extends AbstractOption {
 

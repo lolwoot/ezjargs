@@ -1,10 +1,10 @@
 package com.lolwoot.ezjargs.options;
 
-import java.lang.reflect.Field;
-
 import com.lolwoot.ezjargs.ParametersLine;
-import com.lolwoot.ezjargs.processors.Processor;
 import com.lolwoot.ezjargs.injectors.AbstractInjector;
+import com.lolwoot.ezjargs.processors.Processor;
+
+import java.lang.reflect.Field;
 
 public abstract class AbstractOption {
 
@@ -25,6 +25,10 @@ public abstract class AbstractOption {
 		this.injector.inject(val);
 	}
 
+	/**
+	 * Process option value(or values) and increase pointer of current element in ParametersLine
+	 * @param line
+	 */
 	protected abstract Object processOpt(ParametersLine line);
 
 	protected abstract AbstractInjector createInjector(Object bean, Field field);

@@ -1,20 +1,12 @@
 package com.lolwoot.ezjargs;
 
-import com.lolwoot.ezjargs.CLIParser;
-import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
-
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-
+import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
 
-public class SimpleTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class SimpleTests {
 
 	@Test
 	public void oneOptionAnd1OptValueString() {
@@ -131,9 +123,24 @@ public class SimpleTest {
 
 	}
 
-	//@Test
-	//TODO delete?
-	public void justTest() {
+	@Test
+	public void soloParameterWithoutOptions() {
+		final class Container {
+			private String parameter;
+		}
+
+		final String[] ARGS = {"string1"};
+		Container c = new Container();
+
+		CLIParser
+			.bindParameters("parameter")
+			.parse(ARGS, c);
+		
+		assertEquals(ARGS[0], c.parameter);
+	}
+
+	@Test
+	public void manyParametersWithoutOptions() {
 		final class Container {
 			private String[] parameters;
 		}
@@ -145,7 +152,11 @@ public class SimpleTest {
 			.bindParameters("parameters")
 			.parse(ARGS, c);
 
-		//assertArrayEquals(ARGS, c.parameters);
+		assertArrayEquals(ARGS, c.parameters);
+	}
 
+	@Test
+	public void emptyLineWithoutOptionsAndParameters() {
+		CLIParser.parse(new String[]{}, new Object());
 	}
 }

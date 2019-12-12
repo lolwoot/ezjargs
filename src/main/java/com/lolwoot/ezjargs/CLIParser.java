@@ -19,23 +19,20 @@ public class CLIParser {
 
 		BeanParser beanParser = new BeanParser(bean, mapping.create());
 
-		while(pLine.hasNext()) {
-			String name = pLine.peekOptName();
-			AbstractOption opt = beanParser.getOptionByName(name);
-
-			pLine.processOpt(opt);
-		}		
+		while (!pLine.isEmpty()) {
+			String optionName = pLine.getToken();
+			AbstractOption option = beanParser.getOptionByName(optionName);
+			pLine.processOption(option);
+		}
 	}
 
-	//TODO test binding
 	public static CLIParser bind(String optionName, String fieldName) {
-		//bindMap.put(fieldName, optionName);
 		mapping.bind(optionName, fieldName);
 		return instance;
 	}
 
 	public static CLIParser bindParameters(String fieldName) {
-		bind(null, fieldName);
+		bind(ParametersLine.PARAMETERS_NAME, fieldName);
 		return instance;
 	}
 
