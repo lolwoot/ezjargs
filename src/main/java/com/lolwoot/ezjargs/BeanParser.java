@@ -9,6 +9,7 @@ import com.lolwoot.ezjargs.processors.ProcessorsRepository;
 import com.lolwoot.ezjargs.options.AbstractOption;
 import com.lolwoot.ezjargs.options.MultiOption;
 import com.lolwoot.ezjargs.options.SingleOption;
+import com.lolwoot.ezjargs.help.HelpPrinter;
 import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
 
@@ -17,10 +18,12 @@ public class BeanParser {
 	private Object bean;
 	
 	private Map<String, AbstractOption> options = new HashMap<>();
+
+	private HelpPrinter help;
 	
 	public BeanParser(Object bean, Map<String, String> bindMap) {
     
-		this.bean = bean;  
+		this.bean = bean;
 		Class<?> clazz = bean.getClass();
 
 		for(Map.Entry<String, String> entry : bindMap.entrySet()) {
@@ -45,6 +48,10 @@ public class BeanParser {
 				ex.printStackTrace();
 			}
 		}
+
+		//TODO test it
+		this.help = new HelpPrinter(options);
+		this.help.print();		
 		
 		System.out.printf("Parsed fileds: %s\n", options);
   	}
