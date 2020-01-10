@@ -19,7 +19,7 @@ public class BeanParser {
 	
 	private Map<String, AbstractOption> options = new HashMap<>();
 
-	private HelpPrinter help;
+	private static final HelpPrinter help = new HelpPrinter();
 	
 	public BeanParser(Object bean, Map<String, String> bindMap) {
     
@@ -49,9 +49,8 @@ public class BeanParser {
 			}
 		}
 
-		//TODO test it
-		this.help = new HelpPrinter(options);
-		this.help.print();		
+		//TODO
+		help.print(bean.getClass().getName(), options);		
 		
 		System.out.printf("Parsed fileds: %s\n", options);
   	}

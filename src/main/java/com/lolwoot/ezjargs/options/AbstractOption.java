@@ -31,10 +31,20 @@ public abstract class AbstractOption {
 	 */
 	protected abstract Object processOpt(ParametersLine line);
 
+	/**
+	 * Factory method for creating injector (single field injector or collection)
+	 * @param bean
+	 * @param field
+	 */
 	protected abstract AbstractInjector createInjector(Object bean, Field field);
 
 	public String getName() {
 		return name;
+	}
+
+	//TODO
+	public String getUsage() {
+		return "MockUsage. User this option for ...";
 	}
 }
 

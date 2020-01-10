@@ -1,6 +1,17 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+
+configure(install.repositories.mavenInstaller) {
+	pom.project {
+		groupId 'com.lolwoot'
+		artifactId 'ezjargs'
+		packaging 'jar'
+		version 'pre'
+	}
+}
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 

@@ -8,155 +8,163 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleTests {
 
-	@Test
-	public void oneOptionAnd1OptValueString() {
-		
-		final class Container {
-			private String stringValue;
-		}
+    @Test
+    public void oneOptionAnd1OptValueString() {
 
-		final String[] ARGS = {"-s", "string_value_option_value"};
-		Container c = new Container();
+        final class Container {
+            private String stringValue;
+        }
 
-		//CLIParser.parse(ARGS, c);
-		CLIParser
-			.bind("-s", "stringValue")
-			.parse(ARGS, c);
+        final String[] ARGS = {"-s", "string_value_option_value"};
+        Container c = new Container();
 
-		assertEquals(ARGS[1], c.stringValue);
+        //CLIParser.parse(ARGS, c);
+        CLIParser.builder()
+                .bind("-s", "stringValue")
+                .parse(ARGS, c);
 
-	}
+        assertEquals(ARGS[1], c.stringValue);
 
-	@Test
-	public void twoOptionsAnd2OptValue() {
-		
-		final class Container {
-			private String str1;
-			private String str2;
-			public String toString() {
-				return String.format("[%s, %s]", str1, str2);
-			}
-		}
+    }
 
-		final String[] ARGS = {"-s", "FirstString", "-o", "SecondString"};
+    @Test
+    public void twoOptionsAnd2OptValue() {
 
-		Container c = new Container();
+        final class Container {
+            private String str1;
+            private String str2;
 
-		CLIParser
-			.bind("-s", "str1")
-			.bind("-o", "str2")
-			.parse(ARGS, c);
+            public String toString() {
+                return String.format("[%s, %s]", str1, str2);
+            }
+        }
 
-		System.out.println(c);
+        final String[] ARGS = {"-s", "FirstString", "-o", "SecondString"};
 
-		assertEquals(ARGS[1], c.str1);
-		assertEquals(ARGS[3], c.str2);
-	}
+        Container c = new Container();
 
-	@Test
-	public void parseWithEmptyBinding() {
-		final String[] ARGS = {"-s", "test"};
+        CLIParser
+				.builder()
+                .bind("-s", "str1")
+                .bind("-o", "str2")
+                .parse(ARGS, c);
 
-		assertThrows(OptionNotMappedException.class, () -> {
-			CLIParser.parse(ARGS, new Object());
-		});
-	}
+        System.out.println(c);
 
-	@Test
-	public void optionValueWithMissingProcessor() {
-		
-		final class Container {
-			//we do not have processor for OptionClass.class
-			private OptionClass option;
-		}
+        assertEquals(ARGS[1], c.str1);
+        assertEquals(ARGS[3], c.str2);
+    }
 
-		final String[] ARGS = {"-opt", "value"};
+    @Test
+    public void parseWithEmptyBinding() {
+        final String[] ARGS = {"-s", "test"};
 
-		Container c = new Container();
-		
-		assertThrows(ProcessorNotFoundException.class, () -> {
-			CLIParser
-				.bind("-opt", "option")
-				.parse(ARGS, c);
-		});
-	}
-	private class OptionClass {
+        assertThrows(OptionNotMappedException.class, () -> {
+            CLIParser.builder().parse(ARGS, new Object());
+        });
+    }
 
-	}
+    @Test
+    public void optionValueWithMissingProcessor() {
 
-	@Test
-	public void onlyParameters() {
-		final class Container {
-			private String[] parameters;
-		}
+        final class Container {
+            //we do not have processor for OptionClass.class
+            private OptionClass option;
+        }
 
-		final String[] ARGS = {"string1", "string2", "string3"};
-		Container c = new Container();
+        final String[] ARGS = {"-opt", "value"};
 
-		CLIParser
-			.bindParameters("parameters")
-			.parse(ARGS, c);
+        Container c = new Container();
 
-		assertArrayEquals(ARGS, c.parameters);
-	}
+        assertThrows(ProcessorNotFoundException.class, () -> {
+            CLIParser
+					.builder()
+                    .bind("-opt", "option")
+                    .parse(ARGS, c);
+        });
+    }
 
-	@Test
-	public void optionsAndParameters() {
-		final class Container {
-			private String stringField;
-			private Integer integerField;
-			private String[] additional;
-		}
+    private class OptionClass {
 
-		final String[] ARGS = {"-s", "string1", "-o", "123", "param1", "param2"};
-		Container c = new Container();
+    }
 
-		CLIParser
-			.bind("-s", "stringField")
-			.bind("-o", "integerField")
-			.bindParameters("additional")
-			.parse(ARGS, c);
+    @Test
+    public void onlyParameters() {
+        final class Container {
+            private String[] parameters;
+        }
 
-		assertEquals("string1", c.stringField);
-		assertEquals(Integer.valueOf(123), c.integerField);
-		assertArrayEquals(new String[]{"param1", "param2"}, c.additional);
+        final String[] ARGS = {"string1", "string2", "string3"};
+        Container c = new Container();
 
-	}
+        CLIParser
+				.builder()
+                .bindParameters("parameters")
+                .parse(ARGS, c);
 
-	@Test
-	public void soloParameterWithoutOptions() {
-		final class Container {
-			private String parameter;
-		}
+        assertArrayEquals(ARGS, c.parameters);
+    }
 
-		final String[] ARGS = {"string1"};
-		Container c = new Container();
+    @Test
+    public void optionsAndParameters() {
+        final class Container {
+            private String stringField;
+            private Integer integerField;
+            private String[] additional;
+        }
 
-		CLIParser
-			.bindParameters("parameter")
-			.parse(ARGS, c);
-		
-		assertEquals(ARGS[0], c.parameter);
-	}
+        final String[] ARGS = {"-s", "string1", "-o", "123", "param1", "param2"};
+        Container c = new Container();
 
-	@Test
-	public void manyParametersWithoutOptions() {
-		final class Container {
-			private String[] parameters;
-		}
+        CLIParser
+				.builder()
+                .bind("-s", "stringField")
+                .bind("-o", "integerField")
+                .bindParameters("additional")
+                .parse(ARGS, c);
 
-		final String[] ARGS = {"string1", "string2", "string3"};
-		Container c = new Container();
+        assertEquals("string1", c.stringField);
+        assertEquals(Integer.valueOf(123), c.integerField);
+        assertArrayEquals(new String[]{"param1", "param2"}, c.additional);
 
-		CLIParser
-			.bindParameters("parameters")
-			.parse(ARGS, c);
+    }
 
-		assertArrayEquals(ARGS, c.parameters);
-	}
+    @Test
+    public void soloParameterWithoutOptions() {
+        final class Container {
+            private String parameter;
+        }
 
-	@Test
-	public void emptyLineWithoutOptionsAndParameters() {
-		CLIParser.parse(new String[]{}, new Object());
-	}
+        final String[] ARGS = {"string1"};
+        Container c = new Container();
+
+        CLIParser
+				.builder()
+                .bindParameters("parameter")
+                .parse(ARGS, c);
+
+        assertEquals(ARGS[0], c.parameter);
+    }
+
+    @Test
+    public void manyParametersWithoutOptions() {
+        final class Container {
+            private String[] parameters;
+        }
+
+        final String[] ARGS = {"string1", "string2", "string3"};
+        Container c = new Container();
+
+        CLIParser
+				.builder()
+                .bindParameters("parameters")
+                .parse(ARGS, c);
+
+        assertArrayEquals(ARGS, c.parameters);
+    }
+
+    @Test
+    public void emptyLineWithoutOptionsAndParameters() {
+        CLIParser.builder().parse(new String[]{}, new Object());
+    }
 }

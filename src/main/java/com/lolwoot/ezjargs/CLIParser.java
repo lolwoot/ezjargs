@@ -2,22 +2,22 @@ package com.lolwoot.ezjargs;
 
 import com.lolwoot.ezjargs.options.AbstractOption;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
 public class CLIParser {
 
-	//TODO
 	private static final CLIParser instance = new CLIParser();
 	private CLIParser() {}
-	private static final Mapping mapping = new Mapping();
 
-	//Main function for client code
-	public static void parse(String[] args, Object bean) {
+	private MappingBuilder mapping;
+
+	private static void parse(String[] args, Object bean, Map<String, String> mapping) {
 		
 		ParametersLine pLine = new ParametersLine(args);
 
-		BeanParser beanParser = new BeanParser(bean, mapping.create());
+		BeanParser beanParser = new BeanParser(bean, mapping);
 
 		while (!pLine.isEmpty()) {
 			String optionName = pLine.getToken();
@@ -26,29 +26,22 @@ public class CLIParser {
 		}
 	}
 
-	public static CLIParser bind(String optionName, String fieldName) {
-		mapping.bind(optionName, fieldName);
-		return instance;
+	public static MappingBuilder builder() {
+		instance.mapping = new MappingBuilder();
+		return instance.mapping;
 	}
 
-	public static CLIParser bindParameters(String fieldName) {
-		bind(ParametersLine.PARAMETERS_NAME, fieldName);
-		return instance;
-	}
-
-	private static class Mapping {
-		private Map<String, String> tmpMap = new HashMap<>();
-		
-		void bind(String optionName, String fieldName) {
-			this.tmpMap.put(fieldName, optionName);
+	public static final class MappingBuilder {
+		private Map<String, String> map = new HashMap<>();
+		public MappingBuilder bind(String optionName, String optionFieldName) {
+			this.map.putIfAbsent(optionName, optionFieldName);
+			return this;
 		}
-
-		Map<String, String> create() {
-			HashMap<String, String> retMap = new HashMap<>(tmpMap);
-			this.tmpMap.clear();
-			return retMap;
+		public MappingBuilder bindParameters(String parametersFieldName) {
+			return bind(ParametersLine.PARAMETERS_NAME, parametersFieldName);
 		}
-
+		public void parse(String[] args, Object bean) {
+			CLIParser.parse(args, bean, Collections.unmodifiableMap(map));
+		}
 	}
-	
 }
