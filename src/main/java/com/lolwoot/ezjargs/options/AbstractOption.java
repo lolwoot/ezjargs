@@ -8,7 +8,9 @@ import java.lang.reflect.Field;
 
 public abstract class AbstractOption {
 
+	//todo make class for option info?
 	private String name;
+	private String description = "<empty_description>";
 
 	private AbstractInjector injector;
 
@@ -42,9 +44,12 @@ public abstract class AbstractOption {
 		return name;
 	}
 
-	//TODO
-	public String getUsage() {
-		return "MockUsage. User this option for ...";
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
 

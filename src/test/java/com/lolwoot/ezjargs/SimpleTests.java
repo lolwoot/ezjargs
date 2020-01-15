@@ -1,5 +1,6 @@
 package com.lolwoot.ezjargs;
 
+import com.lolwoot.ezjargs.exceptions.FieldNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
 import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ public class SimpleTests {
         final String[] ARGS = {"-s", "string_value_option_value"};
         Container c = new Container();
 
-        //CLIParser.parse(ARGS, c);
         CLIParser.builder()
                 .bind("-s", "stringValue")
                 .parse(ARGS, c);
@@ -166,5 +166,25 @@ public class SimpleTests {
     @Test
     public void emptyLineWithoutOptionsAndParameters() {
         CLIParser.builder().parse(new String[]{}, new Object());
+    }
+
+    @Test
+    public void fieldNotExistsInOptionsContainer() {
+        final class Container {
+            private String opt1;
+            private Integer opt2;
+            //not existed field
+            //private String opt3;
+        }
+
+        final String[] ARGS = {"-fname", "string", "-age2", "11", "-sname", "string2"};
+
+        assertThrows(FieldNotFoundException.class, () -> {
+            CLIParser.builder()
+                    .bind("-fname", "opt1")
+                    .bind("-age2", "opt2")
+                    .bind("-sname", "opt3")
+                    .parse(ARGS, new Container());
+        });
     }
 }

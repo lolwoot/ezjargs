@@ -19,7 +19,6 @@ public class MultiOption extends AbstractOption {
 
 		ArrayList<Object> list = new ArrayList<>();
 		while(line.hasNext() && !line.isNextOption()) {
-			System.out.println("process add next option value");
 			list.add(processor.process(line));
 		}
 		System.out.println(list);
