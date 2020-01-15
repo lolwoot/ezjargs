@@ -34,7 +34,7 @@ public class CLIParser {
 	public static final class MappingBuilder {
 		private Map<String, String> map = new HashMap<>();
 		public MappingBuilder bind(String optionName, String optionFieldName) {
-			this.map.putIfAbsent(optionName, optionFieldName);
+			this.map.putIfAbsent(optionFieldName, optionName);
 			return this;
 		}
 		public MappingBuilder bindParameters(String parametersFieldName) {

@@ -23,6 +23,6 @@ public class HelpPrinter {
 
 
 	private String optToString(AbstractOption opt) {
-		return String.format("    %-15s %15s.%n", opt.getName(), opt.getUsage());
+		return String.format("\t%-15s %15s.%n", opt.getName(), opt.getUsage());
 	}
 }
