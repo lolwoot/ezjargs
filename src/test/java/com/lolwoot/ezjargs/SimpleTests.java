@@ -1,5 +1,6 @@
 package com.lolwoot.ezjargs;
 
+import com.lolwoot.ezjargs.exceptions.FieldNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
 import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -8,155 +9,187 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleTests {
 
-	@Test
-	public void oneOptionAnd1OptValueString() {
-		
-		final class Container {
-			private String stringValue;
-		}
+    @Test
+    public void oneOptionAnd1OptValueString() {
 
-		final String[] ARGS = {"-s", "string_value_option_value"};
-		Container c = new Container();
+        final class Container {
+            private String stringValue;
+        }
 
-		//CLIParser.parse(ARGS, c);
-		CLIParser
-			.bind("-s", "stringValue")
-			.parse(ARGS, c);
+        final String[] ARGS = {"-s", "string_value_option_value"};
+        Container c = new Container();
 
-		assertEquals(ARGS[1], c.stringValue);
+        CLIParser.builder()
+                .bind("-s", "stringValue")
+                .parse(ARGS, c);
 
-	}
+        assertEquals(ARGS[1], c.stringValue);
 
-	@Test
-	public void twoOptionsAnd2OptValue() {
-		
-		final class Container {
-			private String str1;
-			private String str2;
-			public String toString() {
-				return String.format("[%s, %s]", str1, str2);
-			}
-		}
+    }
 
-		final String[] ARGS = {"-s", "FirstString", "-o", "SecondString"};
+    @Test
+    public void oneOptionWithDescription() {
 
-		Container c = new Container();
+    }
 
-		CLIParser
-			.bind("-s", "str1")
-			.bind("-o", "str2")
-			.parse(ARGS, c);
+    @Test
+    public void twoOptionsAnd2OptValue() {
 
-		System.out.println(c);
+        final class Container {
+            private String str1;
+            private String str2;
 
-		assertEquals(ARGS[1], c.str1);
-		assertEquals(ARGS[3], c.str2);
-	}
+            public String toString() {
+                return String.format("[%s, %s]", str1, str2);
+            }
+        }
 
-	@Test
-	public void parseWithEmptyBinding() {
-		final String[] ARGS = {"-s", "test"};
+        final String[] ARGS = {"-s", "FirstString", "-o", "SecondString"};
 
-		assertThrows(OptionNotMappedException.class, () -> {
-			CLIParser.parse(ARGS, new Object());
-		});
-	}
+        Container c = new Container();
 
-	@Test
-	public void optionValueWithMissingProcessor() {
-		
-		final class Container {
-			//we do not have processor for OptionClass.class
-			private OptionClass option;
-		}
+        CLIParser
+				.builder()
+                .bind("-s", "str1")
+                .bind("-o", "str2")
+                .parse(ARGS, c);
 
-		final String[] ARGS = {"-opt", "value"};
+        System.out.println(c);
 
-		Container c = new Container();
-		
-		assertThrows(ProcessorNotFoundException.class, () -> {
-			CLIParser
-				.bind("-opt", "option")
-				.parse(ARGS, c);
-		});
-	}
-	private class OptionClass {
+        assertEquals(ARGS[1], c.str1);
+        assertEquals(ARGS[3], c.str2);
+    }
 
-	}
+    @Test
+    public void parseWithEmptyBinding() {
+        final String[] ARGS = {"-s", "test"};
 
-	@Test
-	public void onlyParameters() {
-		final class Container {
-			private String[] parameters;
-		}
+        assertThrows(OptionNotMappedException.class, () -> {
+            CLIParser.builder().parse(ARGS, new Object());
+        });
+    }
 
-		final String[] ARGS = {"string1", "string2", "string3"};
-		Container c = new Container();
+    @Test
+    public void optionValueWithMissingProcessor() {
 
-		CLIParser
-			.bindParameters("parameters")
-			.parse(ARGS, c);
+        final class Container {
+            //we do not have processor for OptionClass.class
+            private OptionClass option;
+        }
 
-		assertArrayEquals(ARGS, c.parameters);
-	}
+        final String[] ARGS = {"-opt", "value"};
 
-	@Test
-	public void optionsAndParameters() {
-		final class Container {
-			private String stringField;
-			private Integer integerField;
-			private String[] additional;
-		}
+        Container c = new Container();
 
-		final String[] ARGS = {"-s", "string1", "-o", "123", "param1", "param2"};
-		Container c = new Container();
+        assertThrows(ProcessorNotFoundException.class, () -> {
+            CLIParser
+					.builder()
+                    .bind("-opt", "option")
+                    .parse(ARGS, c);
+        });
+    }
 
-		CLIParser
-			.bind("-s", "stringField")
-			.bind("-o", "integerField")
-			.bindParameters("additional")
-			.parse(ARGS, c);
+    private class OptionClass {
 
-		assertEquals("string1", c.stringField);
-		assertEquals(Integer.valueOf(123), c.integerField);
-		assertArrayEquals(new String[]{"param1", "param2"}, c.additional);
+    }
 
-	}
+    @Test
+    public void onlyParameters() {
+        final class Container {
+            private String[] parameters;
+        }
 
-	@Test
-	public void soloParameterWithoutOptions() {
-		final class Container {
-			private String parameter;
-		}
+        final String[] ARGS = {"string1", "string2", "string3"};
+        Container c = new Container();
 
-		final String[] ARGS = {"string1"};
-		Container c = new Container();
+        CLIParser
+				.builder()
+                .bindParameters("parameters")
+                .parse(ARGS, c);
 
-		CLIParser
-			.bindParameters("parameter")
-			.parse(ARGS, c);
-		
-		assertEquals(ARGS[0], c.parameter);
-	}
+        assertArrayEquals(ARGS, c.parameters);
+    }
 
-	@Test
-	public void manyParametersWithoutOptions() {
-		final class Container {
-			private String[] parameters;
-		}
+    @Test
+    public void optionsAndParameters() {
+        final class Container {
+            private String stringField;
+            private Integer integerField;
+            private String[] additional;
+        }
 
-		final String[] ARGS = {"string1", "string2", "string3"};
-		Container c = new Container();
+        final String[] ARGS = {"-s", "string1", "-o", "123", "param1", "param2"};
+        Container c = new Container();
 
-		CLIParser
-			.bindParameters("parameters")
-			.parse(ARGS, c);
+        CLIParser
+				.builder()
+                .bind("-s", "stringField")
+                .bind("-o", "integerField")
+                .bindParameters("additional")
+                .parse(ARGS, c);
 
-		assertArrayEquals(ARGS, c.parameters);
-	}
+        assertEquals("string1", c.stringField);
+        assertEquals(Integer.valueOf(123), c.integerField);
+        assertArrayEquals(new String[]{"param1", "param2"}, c.additional);
 
-	@Test
-	public void emptyLineWithoutOptionsAndParameters() {
-		CLIParser.parse(new String[]{}, new Object());
-	}
+    }
+
+    @Test
+    public void soloParameterWithoutOptions() {
+        final class Container {
+            private String parameter;
+        }
+
+        final String[] ARGS = {"string1"};
+        Container c = new Container();
+
+        CLIParser
+				.builder()
+                .bindParameters("parameter")
+                .parse(ARGS, c);
+
+        assertEquals(ARGS[0], c.parameter);
+    }
+
+    @Test
+    public void manyParametersWithoutOptions() {
+        final class Container {
+            private String[] parameters;
+        }
+
+        final String[] ARGS = {"string1", "string2", "string3"};
+        Container c = new Container();
+
+        CLIParser
+				.builder()
+                .bindParameters("parameters")
+                .parse(ARGS, c);
+
+        assertArrayEquals(ARGS, c.parameters);
+    }
+
+    @Test
+    public void emptyLineWithoutOptionsAndParameters() {
+        CLIParser.builder().parse(new String[]{}, new Object());
+    }
+
+    @Test
+    public void fieldNotExistsInOptionsContainer() {
+        final class Container {
+            private String opt1;
+            private Integer opt2;
+            //not existed field
+            //private String opt3;
+        }
+
+        final String[] ARGS = {"-fname", "string", "-age2", "11", "-sname", "string2"};
+
+        assertThrows(FieldNotFoundException.class, () -> {
+            CLIParser.builder()
+                    .bind("-fname", "opt1")
+                    .bind("-age2", "opt2")
+                    .bind("-sname", "opt3")
+                    .parse(ARGS, new Container());
+        });
+    }
 }

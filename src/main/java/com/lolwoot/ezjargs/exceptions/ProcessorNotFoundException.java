@@ -1,6 +1,6 @@
 package com.lolwoot.ezjargs.exceptions;
 
-public class ProcessorNotFoundException extends RuntimeException {
+public class ProcessorNotFoundException extends CmdLineException {
 
 	private static final String STR = "Processor for %s class not found.%n";
 

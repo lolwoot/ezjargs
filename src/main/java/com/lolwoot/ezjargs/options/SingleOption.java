@@ -10,15 +10,15 @@ import java.lang.reflect.Field;
 
 public class SingleOption extends AbstractOption {
 
-	public SingleOption(Object bean, Field field, String name, Processor<?> processor) {
-		super(bean, field, name, processor);
-	}
+    public SingleOption(Object bean, Field field, Processor<?> processor, OptionDescription optD) {
+        super(bean, field, processor, optD);
+    }
 
-	public Object processOpt(ParametersLine line) {
-		return processor.process(line);
-	}
+    public Object processOpt(ParametersLine line) {
+        return processor.process(line);
+    }
 
-	protected AbstractInjector createInjector(Object bean, Field field) {
-		return new SingleInjector(bean, field);
-	}
+    protected AbstractInjector createInjector(Object bean, Field field) {
+        return new SingleInjector(bean, field);
+    }
 }

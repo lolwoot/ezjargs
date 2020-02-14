@@ -1,58 +1,60 @@
 package com.lolwoot.ezjargs;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.HashMap;
-
-import com.lolwoot.ezjargs.processors.Processor;
-import com.lolwoot.ezjargs.processors.ProcessorsRepository;
-import com.lolwoot.ezjargs.options.AbstractOption;
-import com.lolwoot.ezjargs.options.MultiOption;
-import com.lolwoot.ezjargs.options.SingleOption;
-import com.lolwoot.ezjargs.exceptions.ProcessorNotFoundException;
+import com.lolwoot.ezjargs.exceptions.FieldNotFoundException;
 import com.lolwoot.ezjargs.exceptions.OptionNotMappedException;
+import com.lolwoot.ezjargs.options.AbstractOption;
+import com.lolwoot.ezjargs.options.OptionDescription;
+import com.lolwoot.ezjargs.processors.ProcessorsRepository;
+
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BeanParser {
 
-	private Object bean;
-	
-	private Map<String, AbstractOption> options = new HashMap<>();
-	
-	public BeanParser(Object bean, Map<String, String> bindMap) {
-    
-		this.bean = bean;  
-		Class<?> clazz = bean.getClass();
+    private Object bean;
 
-		for(Map.Entry<String, String> entry : bindMap.entrySet()) {
+    Map<String, AbstractOption> options = new HashMap<>();
 
-			Field field = null;
-			try {
-				field = clazz.getDeclaredField(entry.getKey());
-				System.out.printf("Getting processor for %s.\n", entry);
+    public BeanParser(Object bean) {
+        this.bean = bean;
+    }
 
-				//check multivalue field
-				boolean multiValue = field.getType().isArray();
-				System.out.printf("Multivalue: %s. Field class: %s.\n", multiValue, field.getType().getName());
-				Processor<?> fieldProc = ProcessorsRepository.of(field.getType());
-				AbstractOption opt = multiValue ? 
-					new MultiOption(bean, field, entry.getValue(), fieldProc) : 
-					new SingleOption(bean, field, entry.getValue(), fieldProc);
+    public void parseBean(Map<String, OptionDescription.OptionDescriptionBuilder> bindMap) {
+        Class<?> clazz = bean.getClass();
 
-				this.options.put(entry.getValue(), opt);
-			} catch (NoSuchFieldException ex) {
-				//TODO
-				System.out.println(ex.getMessage());
-				ex.printStackTrace();
-			}
-		}
-		
-		System.out.printf("Parsed fileds: %s\n", options);
-  	}
+        for (Map.Entry<String, OptionDescription.OptionDescriptionBuilder> entry : bindMap.entrySet()) {
 
-  	public AbstractOption getOptionByName(String optName) {
-		if(!options.containsKey(optName)) {
-			throw new OptionNotMappedException(optName);
-		}
-	  	return options.get(optName);
-  	}
+            Field field = null;
+            try {
+                field = clazz.getDeclaredField(entry.getKey());
+
+                //build new option description
+                //TODO refactor check array or collection in builder?
+                OptionDescription.OptionDescriptionBuilder builder = entry.getValue();
+                builder.multi(isArrayOrCollection(field));
+                OptionDescription optD = builder.build();
+
+                AbstractOption opt = optD.createOption(bean, field, ProcessorsRepository.of(field.getType()));
+
+                this.options.put(opt.getOptInfo().getName(), opt);
+            } catch (NoSuchFieldException ex) {
+                System.err.printf("Field %s for mapping %s not found", entry.getKey(), entry.getValue());
+                throw new FieldNotFoundException(String.format("Field: %s in %s not found.", entry.getKey(), bean.getClass().toString()));
+            }
+        }
+    }
+
+    private boolean isArrayOrCollection(Field field) {
+        Class<?> clazz = field.getType();
+        return clazz.isArray() || clazz.isInstance(Collection.class);
+    }
+
+    public AbstractOption getOptionByName(String optName) {
+        if (!options.containsKey(optName)) {
+            throw new OptionNotMappedException(optName);
+        }
+        return options.get(optName);
+    }
 }

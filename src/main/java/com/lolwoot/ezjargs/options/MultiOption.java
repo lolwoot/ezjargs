@@ -10,16 +10,15 @@ import java.util.ArrayList;
 
 public class MultiOption extends AbstractOption {
 
-	public MultiOption(Object bean, Field field, String name, Processor<?> processor) {
-		super(bean, field, name, processor);
+	public MultiOption(Object bean, Field field, Processor<?> processor, OptionDescription optD) {
+		super(bean, field, processor, optD);
 	}
 
 	//TODO replace ArrayList?
 	public Object processOpt(ParametersLine line) {
 
 		ArrayList<Object> list = new ArrayList<>();
-		while(line.hasNext() && !line.isNextOption()) {
-			System.out.println("process add next option value");
+		while (line.hasNext() && !line.isNextOption()) {
 			list.add(processor.process(line));
 		}
 		System.out.println(list);
