@@ -8,18 +8,15 @@ import java.lang.reflect.Field;
 
 public abstract class AbstractOption {
 
-	//todo make class for option info?
-	private String name;
-	private String description = "<empty_description>";
+	protected final Processor<?> processor;
+	private final OptionDescription optInfo;
+	private final AbstractInjector injector;
 
-	private AbstractInjector injector;
-
-	protected Processor<?> processor;
-
-	public AbstractOption(Object bean, Field field, String optName, Processor<?> processor) {
+	public AbstractOption(Object bean, Field field, Processor<?> processor, OptionDescription optInfo) {
 		this.injector = createInjector(bean, field);
 		this.processor = processor;
-		this.name = optName;
+		this.optInfo = optInfo;
+
 	}
 
 	public void process(ParametersLine line) {
@@ -35,21 +32,19 @@ public abstract class AbstractOption {
 
 	/**
 	 * Factory method for creating injector (single field injector or collection)
+	 *
 	 * @param bean
 	 * @param field
 	 */
 	protected abstract AbstractInjector createInjector(Object bean, Field field);
 
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	/**
+	 * Getting info about option like name, description.
+	 *
+	 * @return
+	 */
+	public OptionDescription getOptInfo() {
+		return optInfo;
 	}
 }
 

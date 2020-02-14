@@ -34,4 +34,28 @@ public class HelpPrinterTest {
                 }, c));
     }
 
+    @Test
+    public void showHelpMessageWhenErrorOccurredWithDescription() {
+        final class Container {
+            private String name;
+            private Integer count;
+            private File[] params;
+        }
+
+        Container c = new Container();
+
+        assertThrows(OptionNotMappedException.class, () -> CLIParser
+                .builder()
+                .bind("-n", "name", "Simple name")
+                .bind("-c", "count", "Count")
+                .bindParameters("params")
+                .parse(new String[]{
+                        "-n", "name",
+                        "-c", "123",
+                        //try to insert
+                        "-not_existing_option", "value",
+                        "C:\\file1.txt", "C:\\file2.txt", "C:\\file3.txt"
+                }, c));
+    }
+
 }

@@ -28,6 +28,11 @@ public class SimpleTests {
     }
 
     @Test
+    public void oneOptionWithDescription() {
+
+    }
+
+    @Test
     public void twoOptionsAnd2OptValue() {
 
         final class Container {

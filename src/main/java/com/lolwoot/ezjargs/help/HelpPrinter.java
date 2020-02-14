@@ -1,7 +1,7 @@
 package com.lolwoot.ezjargs.help;
 
 import com.lolwoot.ezjargs.options.AbstractOption;
-import com.lolwoot.ezjargs.options.MultiOption;
+import com.lolwoot.ezjargs.options.OptionDescription;
 
 import java.io.PrintStream;
 import java.util.Map;
@@ -18,25 +18,21 @@ public class HelpPrinter {
 		this.print.printf("Usage: %s [-option [option_value,[option_value]]] [parameters].%n", cmdName);
 		this.print.printf("L - list value, M - mandatory option%n");
 		this.print.printf("Option:%n");
-		for(Map.Entry<String, AbstractOption> entry : options.entrySet()) {
-			this.print.print(optToString(entry.getValue()));
+		for (Map.Entry<String, AbstractOption> entry : options.entrySet()) {
+			this.print.print(optToString(entry.getValue().getOptInfo()));
 		}
 	}
 
 
-	private String optToString(AbstractOption opt) {
+	private String optToString(OptionDescription opt) {
 		return String.format("\t%-15s%5s\t%-40s%n", opt.getName(), containingOptionValueString(opt), opt.getDescription());
 	}
 
-	private String containingOptionValueString(AbstractOption option) {
-		boolean multi = option.getClass().equals(MultiOption.class);
-		boolean mandatory = true;
-
+	private String containingOptionValueString(OptionDescription option) {
 		StringBuilder sb = new StringBuilder();
 
-		//TODO enum
-		if (multi) sb.append("L");
-		if (mandatory) sb.append("M");
+		if (option.isMulti()) sb.append("L");
+		if (option.isMandatory()) sb.append("M");
 
 		return sb.toString();
 	}
